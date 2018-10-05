@@ -7,6 +7,8 @@ using UnityEngine.Networking.Types;
 
 public class MyNetworkManager : NetworkManager
 {
+    [SerializeField]
+    protected NetworkPlayer _networkPlayerPrefab;
 
     public List<NetworkLobbyPlayer> connectedPlayers;
 
@@ -16,7 +18,10 @@ public class MyNetworkManager : NetworkManager
         private set;
     }
 
-	private void Awake () {
+    private MainMenuManager _mainMenuManager;
+
+	private void Awake ()
+    {
 		if(Instance != null)
         {
             Destroy(gameObject);
@@ -27,11 +32,17 @@ public class MyNetworkManager : NetworkManager
             connectedPlayers = new List<NetworkLobbyPlayer>();
         }
 	}
-	
+
+    private void Start()
+    {
+        _mainMenuManager = MainMenuManager.Instance;
+    }
+
     public void StartMatchMakerGame(string matchName)
     {
+
         StartMatchMaker();
-        matchMaker.CreateMatch(matchName, 0, false, "", "", "", 0, 0, OnMatchCreate);
+        matchMaker.CreateMatch(matchName, 4, false, "", "", "", 0, 0, OnMatchCreate);
     }
 
     public void JoinMatchMakerGame(NetworkID netId)
@@ -47,6 +58,15 @@ public class MyNetworkManager : NetworkManager
     public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
     {
         base.OnMatchCreate(success, extendedInfo, matchInfo);
+        if (success)
+        {
+            _mainMenuManager.ShowLobbyMenu();
+        }
+        else
+        {
+            Debug.Log(matchInfo);
+            Debug.Log(extendedInfo);
+        }
     }
 
     public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
@@ -57,6 +77,26 @@ public class MyNetworkManager : NetworkManager
     public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
     {
         base.OnMatchList(success, extendedInfo, matchList);
+        if (success)
+        {
+            _mainMenuManager.ShowListMatchesPanel();
+        }
+    }
+
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+    }
+
+    public override void OnServerConnect(NetworkConnection conn)
+    {
+        Debug.Log("Conectou alguém");
+
+    }
+
+    public override void OnStartHost()
+    {
+        base.OnStartHost();
+        Debug.Log("OnStartHost");
     }
 
 }

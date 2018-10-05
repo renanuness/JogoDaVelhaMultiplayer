@@ -6,9 +6,20 @@ using UnityEngine.UI;
 public class CreateMatchUI : MonoBehaviour
 {
     public InputField MatchName;
+    private MyNetworkManager _networkManager;
+
+    private void Start()
+    {
+        _networkManager = MyNetworkManager.Instance;
+    }
 
     public void OnCreateMatchClicked()
     {
-        MyNetworkManager.Instance.StartMatchMakerGame(MatchName.text);
+        _networkManager.StartMatchMakerGame(MatchName.text);
+    }
+
+    public void OnFindMatchClicked()
+    {
+        MainMenuManager.Instance.ShowListMatchesPanel();
     }
 }
