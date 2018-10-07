@@ -166,7 +166,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 30
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
+  m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
 --- !u!1 &40447179
@@ -475,6 +475,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ServerObject: {fileID: 1802368335611024, guid: 8962427fa353ad54a9e9f3967a9d753b,
     type: 2}
+  Content: {fileID: 18402492}
 --- !u!225 &210808430
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -791,7 +792,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!225 &866103919
 CanvasGroup:
   m_ObjectHideFlags: 0

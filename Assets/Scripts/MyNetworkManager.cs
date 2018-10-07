@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -42,24 +43,20 @@ public class MyNetworkManager : NetworkManager
     {
 
         StartMatchMaker();
-        matchMaker.CreateMatch(matchName, 4, false, "", "", "", 0, 0, OnMatchCreate);
+        StartHost();
+        matchMaker.CreateMatch(matchName, 4, true, "", "", "", 0, 0, OnMatchCreate);
     }
 
-    public void JoinMatchMakerGame(NetworkID netId)
+    public void JoinMatchMakerGame(NetworkID netId, Action<bool, MatchInfo> onJoin)
     {
         matchMaker.JoinMatch(netId, "", "", "", 0, 0, OnMatchJoined);
     }
 
-    public void ListMatchMakerGames()
-    {
-        matchMaker.ListMatches(1, 10, "", false, 0, 0, OnMatchList);
-    }
-
     public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
     {
-        base.OnMatchCreate(success, extendedInfo, matchInfo);
         if (success)
         {
+            //NetworkServer.Listen(7777);
             _mainMenuManager.ShowLobbyMenu();
         }
         else
@@ -72,19 +69,21 @@ public class MyNetworkManager : NetworkManager
     public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
     {
         base.OnMatchJoined(success, extendedInfo, matchInfo);
-    }
-
-    public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
-    {
-        base.OnMatchList(success, extendedInfo, matchList);
         if (success)
         {
-            _mainMenuManager.ShowListMatchesPanel();
+            _mainMenuManager.ShowLobbyMenu();
+        }
+        else
+        {
+            Debug.Log(extendedInfo);
+            Debug.Log(matchInfo);
         }
     }
 
-    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    public override void OnClientConnect(NetworkConnection conn)
     {
+        base.OnClientConnect(conn);
+        Debug.Log("Conectei");
     }
 
     public override void OnServerConnect(NetworkConnection conn)
