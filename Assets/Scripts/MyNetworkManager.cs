@@ -11,7 +11,7 @@ public class MyNetworkManager : NetworkManager
     [SerializeField]
     protected NetworkPlayer _networkPlayerPrefab;
 
-    public List<NetworkLobbyPlayer> connectedPlayers;
+    public List<NetworkPlayer> connectedPlayers;
 
     public static MyNetworkManager Instance
     {
@@ -30,7 +30,7 @@ public class MyNetworkManager : NetworkManager
         else
         {
             Instance = this;
-            connectedPlayers = new List<NetworkLobbyPlayer>();
+            connectedPlayers = new List<NetworkPlayer>();
         }
 	}
 
@@ -41,9 +41,9 @@ public class MyNetworkManager : NetworkManager
 
     public void StartMatchMakerGame(string matchName)
     {
-
-        StartMatchMaker();
         StartHost();
+        StartMatchMaker();
+
         matchMaker.CreateMatch(matchName, 4, true, "", "", "", 0, 0, OnMatchCreate);
     }
 
@@ -56,7 +56,6 @@ public class MyNetworkManager : NetworkManager
     {
         if (success)
         {
-            //NetworkServer.Listen(7777);
             _mainMenuManager.ShowLobbyMenu();
         }
         else
@@ -68,9 +67,11 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
     {
-        base.OnMatchJoined(success, extendedInfo, matchInfo);
+
         if (success)
         {
+            Debug.Log("Sucesso:" + extendedInfo);
+            Debug.Log("Sucesso:" + matchInfo);
             _mainMenuManager.ShowLobbyMenu();
         }
         else
@@ -82,20 +83,38 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnClientConnect(NetworkConnection conn)
     {
-        base.OnClientConnect(conn);
         Debug.Log("Conectei");
+        ClientScene.Ready(conn);
+        ClientScene.AddPlayer(0);
+        
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
+        base.OnServerConnect(conn);
         Debug.Log("Conectou alguém");
 
     }
 
     public override void OnStartHost()
     {
-        base.OnStartHost();
         Debug.Log("OnStartHost");
+        base.OnStartHost();
+    }
+     
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+        // Intentionally not calling base here - we want to control the spawning of prefabs
+        Debug.Log("OnServerAddPlayer");
+
+        NetworkPlayer newPlayer = Instantiate<NetworkPlayer>(_networkPlayerPrefab);
+        DontDestroyOnLoad(newPlayer);
+        NetworkServer.AddPlayerForConnection(conn, newPlayer.gameObject, playerControllerId);
     }
 
+    public void RegisterNetworkPlayer(NetworkPlayer player)
+    {
+        connectedPlayers.Add(player);
+        Debug.Log("Player adicionado à lista");
+    }
 }
