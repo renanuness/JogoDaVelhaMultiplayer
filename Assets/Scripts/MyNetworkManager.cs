@@ -13,6 +13,8 @@ public class MyNetworkManager : NetworkManager
 
     public List<NetworkPlayer> connectedPlayers;
 
+    public event Action<NetworkPlayer> playerJoined; 
+
     public static MyNetworkManager Instance
     {
         get;
@@ -107,9 +109,17 @@ public class MyNetworkManager : NetworkManager
         // Intentionally not calling base here - we want to control the spawning of prefabs
         Debug.Log("OnServerAddPlayer");
 
-        NetworkPlayer newPlayer = Instantiate<NetworkPlayer>(_networkPlayerPrefab);
+        NetworkPlayer newPlayer = Instantiate(_networkPlayerPrefab);
+
+        
         DontDestroyOnLoad(newPlayer);
+
         NetworkServer.AddPlayerForConnection(conn, newPlayer.gameObject, playerControllerId);
+        if(playerJoined != null)
+        {
+            playerJoined(newPlayer);
+        }
+
     }
 
     public void RegisterNetworkPlayer(NetworkPlayer player)

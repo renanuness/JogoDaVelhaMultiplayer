@@ -1,16 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LobbyPlayer : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
+
+    public Text PlayerNameTxt;
+    private string playerName;
+
+    public string PlayerName
+    {
+        get
+        {
+            return playerName;
+        }
+        set
+        {
+            playerName = value;
+        }
+    }
+
+	public void Init()
+    {
+        PlayerNameTxt.text = playerName;	
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	private void Update ()
+    {
 		
 	}
 }

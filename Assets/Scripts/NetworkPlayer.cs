@@ -6,10 +6,19 @@ using UnityEngine.Networking;
 public class NetworkPlayer : NetworkBehaviour
 {
     private MyNetworkManager _networkManager;
+    private string name;
 
+    public string Name
+    {
+        get
+        {
+            return name;
+        }
+    }
     private void Start()
     {
         _networkManager = MyNetworkManager.Instance;
+        name = "Renan" + Random.Range(0, 10);
     }
 
     private void Update()
