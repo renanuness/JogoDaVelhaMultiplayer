@@ -1,41 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking.Match;
 using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 public class ServerInfo : MonoBehaviour
 {
-
     public Text GameName;
     public string _gameName;
     
     private MyNetworkManager _networkManager;
-    private NetworkID _networkId;
+    private MatchInfoSnapshot _matchInfo;
 
-    public void SetGameName(string gameName)
+    public void SetMatchInfo(MatchInfoSnapshot info)
     {
-        _gameName = gameName;
-    }
-
-    public void SetNetworkId(NetworkID networkId)
-    {
-        _networkId = networkId;
+        _matchInfo = info;
     }
 
     public void Init()
     {
         GameName.text = _gameName;
         _networkManager = MyNetworkManager.Instance;
-                
     }
-
     
     public void JoinMatch()
     {
-
         MainMenuManager mainMenuManager = MainMenuManager.Instance;
-        _networkManager.JoinMatchMakerGame(_networkId, (sucess, matchInfo) =>
+        if(_networkManager.matchMaker == null)
+        {
+            Debug.Log("matchmaker equals null");
+            _networkManager.StartMatchMaker();
+        }
+        _networkManager.JoinMatchMakerGame(_matchInfo.networkId, (sucess, matchInfo) =>
         {
             if (sucess)
             {

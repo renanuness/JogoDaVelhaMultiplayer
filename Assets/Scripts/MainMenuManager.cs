@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenuManager : Singleton<MainMenuManager> {
 
@@ -14,8 +15,8 @@ public class MainMenuManager : Singleton<MainMenuManager> {
     public CanvasGroup StartMenuPanel;
     public CanvasGroup LobbyPanel;
     public CanvasGroup ListMatchesPanel;
-
     private CanvasGroup _currentPanel;
+    public InputField PlayerNametInput;
 
 	private void Start ()
     {
@@ -39,6 +40,8 @@ public class MainMenuManager : Singleton<MainMenuManager> {
     {
         ChangePanel(LobbyPanel);
     }
+
+
 
     //ListMatches
     public void ShowListMatchesPanel()

@@ -5,26 +5,53 @@ using UnityEngine.UI;
 
 public class LobbyMenu : MonoBehaviour
 {
+    public static LobbyMenu _instance = null;
     public GameObject LobbyPlayer;
     public Transform PlayersListUI;
     private MyNetworkManager _networkManager;
 
-	void Start ()
+    public static LobbyMenu Instance
+    {
+        get
+        {
+            if(_instance == null)
+            {
+                _instance = FindObjectOfType<LobbyMenu>();
+            }
+            return _instance;
+        }
+    }
+
+	void Awake ()
     {
         _networkManager = MyNetworkManager.Instance;
-        _networkManager.playerJoined += InstantiatePlayerList;
-        Debug.Log("Ativou: Lobby Menu");
-	}
-	
-	void Update ()
-    {
-	    	
-	}
 
-    private void InstantiatePlayerList(NetworkPlayer player)
+        Debug.Log("Ativou: Lobby Menu");
+    }
+
+    private void Start()
     {
-        var go = Instantiate(LobbyPlayer, PlayersListUI);
-        go.GetComponent<LobbyPlayer>().PlayerName = player.Name;
-        go.GetComponent<LobbyPlayer>().Init();
-    } 
+        _networkManager.playerJoined += PlayerJoined;
+        RefreshConnectedPlayers();
+    }
+
+    public void AddPlayer(LobbyPlayer playerLobby)
+    {
+        playerLobby.transform.SetParent(PlayersListUI, false);
+    }
+
+    private void PlayerJoined(LobbyPlayer player)
+    {
+        //player.transform.SetParent(PlayersListUI);
+        RefreshConnectedPlayers();
+    }
+
+    private void RefreshConnectedPlayers()
+    {
+        foreach(var player in _networkManager.connectedPlayers)
+        {
+            player.lobbyObject.transform.SetParent(PlayersListUI, false);
+        }
+    }
+
 }

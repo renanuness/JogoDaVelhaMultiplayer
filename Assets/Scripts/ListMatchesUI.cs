@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking.Match;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Types;
+using System.Linq;
 
 public class ListMatchesUI : MonoBehaviour
 {
@@ -19,13 +20,10 @@ public class ListMatchesUI : MonoBehaviour
     private float _listAutoRefreshTime = 10f;
     private float _nextRefreshTime = 0;
     private int _currentPage = 1;
-    private List<NetworkID> _gamesList;  
     private void Start ()
     {
         _networkManager = MyNetworkManager.Instance;
         _networkManager.StartMatchMaker();
-        _gamesList = new List<NetworkID>();
-
     }
 
     // Update is called once per frame
@@ -48,6 +46,7 @@ public class ListMatchesUI : MonoBehaviour
 
     public void OnMatchListed(bool success, string extraInfo, List<MatchInfoSnapshot> response)
     {
+        
         if (success)
         {
             Debug.Log(response.Count);
@@ -56,14 +55,9 @@ public class ListMatchesUI : MonoBehaviour
             {
                 foreach(var game in response)
                 {
-                    if (_gamesList.Contains(game.networkId))
-                    {
-                        continue;
-                    }
                     var go = Instantiate(ServerObject, Content);
                     ServerInfo si = go.GetComponent<ServerInfo>();
-                    si._gameName = game.name;
-                    si.SetNetworkId(game.networkId);
+                    si.SetMatchInfo(game);
                     si.Init();
                 }
             }
