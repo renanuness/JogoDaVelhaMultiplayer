@@ -40,7 +40,7 @@ public class LobbyMenu : MonoBehaviour
         playerLobby.transform.SetParent(PlayersListUI, false);
     }
 
-    private void PlayerJoined(LobbyPlayer player)
+    private void PlayerJoined()
     {
         //player.transform.SetParent(PlayersListUI);
         RefreshConnectedPlayers();
@@ -50,6 +50,7 @@ public class LobbyMenu : MonoBehaviour
     {
         foreach(var player in _networkManager.connectedPlayers)
         {
+            Debug.Log(player.hasAuthority);
             player.lobbyObject.transform.SetParent(PlayersListUI, false);
         }
     }

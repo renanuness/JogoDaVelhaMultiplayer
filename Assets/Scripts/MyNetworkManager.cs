@@ -15,7 +15,7 @@ public class MyNetworkManager : NetworkManager
 
     public List<NetworkPlayer> connectedPlayers;
 
-    public event Action<LobbyPlayer> playerJoined; 
+    public event Action playerJoined; 
 
     public static MyNetworkManager Instance
     {
@@ -146,11 +146,11 @@ public class MyNetworkManager : NetworkManager
         player.onPlayerReady += IsPlayersReady;
         Debug.Log("Player adicionado à lista");
 
-        LobbyPlayer lobbyPlayer = player.OnEnterLobbyScene();
+        player.OnEnterLobbyScene();
 
         if (playerJoined != null)
         {
-            playerJoined(lobbyPlayer);
+            playerJoined();
         }
         
     }

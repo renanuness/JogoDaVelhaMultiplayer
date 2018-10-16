@@ -65,21 +65,19 @@ public class NetworkPlayer : NetworkBehaviour
         onPlayerReady();
     }
 
-    private LobbyPlayer CreateLobbyObject()
+    private void CreateLobbyObject()
     {
         lobbyObject = Instantiate(_lobbyPrefab).GetComponent<LobbyPlayer>();
         lobbyObject.PlayerName = _playerName;
         Debug.Log(_playerName + "tem autoridade:" + hasAuthority);
         lobbyObject.Init(this);
-        return lobbyObject;
     }
 
     [Client]
-    public LobbyPlayer OnEnterLobbyScene()
+    public void OnEnterLobbyScene()
     {
         Debug.Log("Client entered on the lobby");
-        return CreateLobbyObject();
-        
+         CreateLobbyObject();
     }
 
     //Quando começar o modo cliente, instanciar um objeto para o jogador.
@@ -89,13 +87,11 @@ public class NetworkPlayer : NetworkBehaviour
         DontDestroyOnLoad(this);
         Debug.Log("Client Network Player start");
 
-
+        base.OnStartClient();
         if (_networkManager == null)
         {
             _networkManager = MyNetworkManager.Instance;
         }
-
-        base.OnStartClient();
 
         _networkManager.RegisterNetworkPlayer(this);
     }

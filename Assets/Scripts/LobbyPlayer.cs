@@ -36,6 +36,7 @@ public class LobbyPlayer : MonoBehaviour
 
     public void Init(NetworkPlayer networkPlayer)
     {
+        Debug.Log(networkPlayer.hasAuthority);
         if(_lobbyMenu == null)
         {
             _lobbyMenu = LobbyMenu.Instance;
