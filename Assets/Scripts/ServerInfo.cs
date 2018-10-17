@@ -20,7 +20,7 @@ public class ServerInfo : MonoBehaviour
 
     public void Init()
     {
-        GameName.text = _gameName;
+        GameName.text = _matchInfo.name;
         _networkManager = MyNetworkManager.Instance;
     }
     

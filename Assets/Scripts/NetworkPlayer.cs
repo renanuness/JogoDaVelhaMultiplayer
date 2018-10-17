@@ -47,10 +47,7 @@ public class NetworkPlayer : NetworkBehaviour
         get;
         private set;
     }
-
-
-
-
+       
     private void Start()
     {
         _networkManager = MyNetworkManager.Instance;
@@ -65,12 +62,15 @@ public class NetworkPlayer : NetworkBehaviour
         onPlayerReady();
     }
 
+    public override void OnStartServer()
+    {
+        Debug.Log("OnStartServer:" + hasAuthority);
+    }
+
     private void CreateLobbyObject()
     {
         lobbyObject = Instantiate(_lobbyPrefab).GetComponent<LobbyPlayer>();
         lobbyObject.PlayerName = _playerName;
-        Debug.Log(_playerName + "tem autoridade:" + hasAuthority);
-        lobbyObject.Init(this);
     }
 
     [Client]
@@ -79,7 +79,7 @@ public class NetworkPlayer : NetworkBehaviour
         Debug.Log("Client entered on the lobby");
          CreateLobbyObject();
     }
-
+    #region Overrides
     //Quando começar o modo cliente, instanciar um objeto para o jogador.
     [Client]
     public override void OnStartClient()
@@ -106,16 +106,51 @@ public class NetworkPlayer : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-        Debug.Log("Start authority");
+        lobbyObject.Init(this);
     }
-    //
+
+    #endregion
+
     private void OnReadyChanged(bool value)
     {
         _isReady = value;
+        lobbyObject.UpdateButton(this);
+    }
 
-        if (syncVarsChanged != null)
+    #region Commands
+
+    [Command]
+    public void CmdSetReady(bool ready)
+    {
+        _isReady = ready;
+        if (ready)
         {
-            syncVarsChanged(this);
+            if (onPlayerReady != null)
+            {
+                onPlayerReady();
+            }
         }
     }
+
+    #endregion
+
+    #region RPC
+
+
+    #endregion
+
+    //
+    Player _player;
+    public void SetPLayer(Player player)
+    {
+        _player = player;
+    }
+
+    public Player GetPlayer()
+    {
+        return _player;
+    }
+    //TODO: no momento em que entrar na cena de menu antes da partida
+    // será instanciado um player OBJ pra cada playerNetwork, com síbolo aleatório, o player um sempre irá começar a partida
+    //
 }

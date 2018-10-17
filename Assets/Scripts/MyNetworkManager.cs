@@ -89,12 +89,6 @@ public class MyNetworkManager : NetworkManager
         }
     }
 
-    //public override void OnStartClient(NetworkClient client)
-    //{
-    //    base.OnStartClient(client);
-    //    Debug.Log("Connected:" + client.isConnected);
-    //}
-
     public override void OnClientConnect(NetworkConnection conn)
     {
         Debug.Log("Conectei");
@@ -127,7 +121,7 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        // Intentionally not calling base here - we want to control the spawning of prefabs
+        // Server instancia o player, no player vai chamar o callback OnClientConnect
         Debug.Log("OnServerAddPlayer");
         NetworkPlayer newPlayer = Instantiate(_networkPlayerPrefab);
         DontDestroyOnLoad(newPlayer);
@@ -147,7 +141,7 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Player adicionado à lista");
 
         player.OnEnterLobbyScene();
-
+        player.SetPLayer(PlayerFactory.CreatePlayer(player));
         if (playerJoined != null)
         {
             playerJoined();

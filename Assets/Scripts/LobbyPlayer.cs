@@ -10,6 +10,9 @@ public class LobbyPlayer : MonoBehaviour
 {
     public InputField PlayerNameTxt;
     public Button ReadyButton;
+    public Image SymbolImage;
+    public Sprite CrossSprite;
+    public Sprite CircleSprite;
 
     private string playerName;
     private LobbyMenu _lobbyMenu;
@@ -31,18 +34,29 @@ public class LobbyPlayer : MonoBehaviour
 
         _lobbyMenu = LobbyMenu.Instance;
         ReadyButton.GetComponent<Image>().color = Color.red;
-        _networkPlayer.syncVarsChanged += OnNetworkPlayerSyncvarChanged;
+
     }
 
     public void Init(NetworkPlayer networkPlayer)
     {
-        Debug.Log(networkPlayer.hasAuthority);
         if(_lobbyMenu == null)
         {
             _lobbyMenu = LobbyMenu.Instance;
         }
         _networkPlayer = networkPlayer;
         PlayerNameTxt.text = playerName;
+        _networkPlayer.syncVarsChanged += OnNetworkPlayerSyncvarChanged;
+        UpdateButton(networkPlayer);
+
+        if (_networkPlayer.GetPlayer().GetSymbol() == Symbol.CIRCLE)
+        {
+            SymbolImage.GetComponent<Image>().sprite = CircleSprite;
+        }
+        else
+        {
+            SymbolImage.GetComponent<Image>().sprite = CrossSprite;
+
+        }
 
         if (_networkPlayer.hasAuthority)
         {
@@ -68,30 +82,37 @@ public class LobbyPlayer : MonoBehaviour
 
     public void ButtonReady()
     {
+        if (_networkPlayer == null)
+            return;
+
         if (_networkPlayer.IsReady)
         {
-            PlayerNameTxt.enabled = true;
-            _networkPlayer.Ready(false);
-            ReadyButton.GetComponent<Image>().color = Color.red;
+            _networkPlayer.CmdSetReady(false);
         }
         else
         {
-            PlayerNameTxt.enabled = false;
-            _networkPlayer.Ready(true);
-            _networkPlayer.Name = PlayerNameTxt.text;
-            ReadyButton.GetComponent<Image>().color = Color.green;
+            _networkPlayer.CmdSetReady(true);
         }
     }
 
     private void OnNetworkPlayerSyncvarChanged(NetworkPlayer player)
     {
         // Update everything
-        UpdateValues();
+        PlayerNameTxt.text = _networkPlayer.name;
     }
 
-    private void UpdateValues()
+    public void UpdateButton(NetworkPlayer player)
     {
-        PlayerNameTxt.text = _networkPlayer.name;
-
+        if (player.IsReady)
+        {
+            PlayerNameTxt.enabled = false;
+            player.Name = PlayerNameTxt.text;
+            ReadyButton.GetComponent<Image>().color = Color.green;
+        }
+        else
+        {
+            PlayerNameTxt.enabled = true;
+            ReadyButton.GetComponent<Image>().color = Color.red;
+        }
     }
 }
