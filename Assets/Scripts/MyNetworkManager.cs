@@ -15,7 +15,8 @@ public class MyNetworkManager : NetworkManager
 
     public List<NetworkPlayer> connectedPlayers;
 
-    public event Action playerJoined; 
+    public event Action playerJoined;
+
 
     public static MyNetworkManager Instance
     {
@@ -56,6 +57,8 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("NetID:" + netId);
         matchMaker.JoinMatch(netId, "", "", "", 0, 0, OnMatchJoined);
     }
+
+    #region Callbacks override
 
     public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
     {
@@ -104,6 +107,7 @@ public class MyNetworkManager : NetworkManager
         //talvez eu crie o código aqui pq precio chamr no server o momento que um cliente se conecta e passar pra ele os players 
         //q  estão conectados pra ele poder instaciar os players obj no lobby dele
 
+
     }
 
     public override void OnStartHost()
@@ -125,6 +129,7 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("OnServerAddPlayer");
         NetworkPlayer newPlayer = Instantiate(_networkPlayerPrefab);
         DontDestroyOnLoad(newPlayer);
+        PlayerFactory.CreatePlayer(newPlayer);
         NetworkServer.AddPlayerForConnection(conn, newPlayer.gameObject, playerControllerId);
     }
 
@@ -134,14 +139,16 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Trocou a cena");
     }
 
+    #endregion
+
     public void RegisterNetworkPlayer(NetworkPlayer player)
     {
         connectedPlayers.Add(player);
         player.onPlayerReady += IsPlayersReady;
+
         Debug.Log("Player adicionado à lista");
 
         player.OnEnterLobbyScene();
-        player.SetPLayer(PlayerFactory.CreatePlayer(player));
         if (playerJoined != null)
         {
             playerJoined();
@@ -163,4 +170,7 @@ public class MyNetworkManager : NetworkManager
             }
         }
     }
+
+    
+
 }

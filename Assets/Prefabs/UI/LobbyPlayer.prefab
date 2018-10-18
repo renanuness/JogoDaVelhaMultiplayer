@@ -466,6 +466,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerNameTxt: {fileID: 114346855466492818}
   ReadyButton: {fileID: 114519076160766254}
+  SymbolImage: {fileID: 114602889685020016}
+  CrossSprite: {fileID: 21300000, guid: 5ab11f5e31dcb7442aec755091e3844e, type: 3}
+  CircleSprite: {fileID: 21300000, guid: de29e8f22efcc9a45804f81a589849b9, type: 3}
 --- !u!222 &222001355272230902
 CanvasRenderer:
   m_ObjectHideFlags: 1

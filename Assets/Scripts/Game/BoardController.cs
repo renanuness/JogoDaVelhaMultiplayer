@@ -10,12 +10,16 @@ public class BoardController : MonoBehaviour
 
     public Animation endGameAnimation;
     //public UIManager uiManager;
+    public Sprite _circleSprite;
+    public Sprite _crossSprite;
+
 
     private Animator animator;
     private GameObject[] squares = new GameObject[9];
     private static BoardController instance;
     private Symbol _currentPlayer;
     private static BoardController _instance;
+
 
     public static BoardController Instance
     {

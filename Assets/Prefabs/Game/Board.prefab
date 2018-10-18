@@ -579,22 +579,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 165
-    i1: 22
-    i2: 35
-    i3: 243
-    i4: 195
-    i5: 99
-    i6: 98
-    i7: 148
-    i8: 91
-    i9: 70
-    i10: 62
-    i11: 106
-    i12: 34
-    i13: 19
-    i14: 31
-    i15: 41
+    i0: 71
+    i1: 181
+    i2: 118
+    i3: 146
+    i4: 241
+    i5: 65
+    i6: 197
+    i7: 36
+    i8: 75
+    i9: 89
+    i10: 101
+    i11: 44
+    i12: 101
+    i13: 139
+    i14: 37
+    i15: 133
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
 --- !u!114 &114870677826015940
@@ -605,11 +605,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1913040662367008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eee6c8066fea9d7488881567529953a2, type: 3}
+  m_Script: {fileID: 11500000, guid: e1a625f6056761543b56d4588c14e5f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _circleSprite: {fileID: 21300000, guid: a93e430878d1ee4479923b679ebc3a12, type: 3}
-  _crossSprite: {fileID: 21300000, guid: ec0d0ee578f7bfb48b18a81cb0ce8c4e, type: 3}
+  board: 000000000000000000000000000000000000000000000000000000000000000000000000
+  endGameAnimation: {fileID: 0}
+  _circleSprite: {fileID: 21300000, guid: de29e8f22efcc9a45804f81a589849b9, type: 3}
+  _crossSprite: {fileID: 21300000, guid: 5ab11f5e31dcb7442aec755091e3844e, type: 3}
 --- !u!212 &212064784115351242
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -883,7 +885,7 @@ SpriteRenderer:
   m_Size: {x: 2.9, y: 2.39}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!212 &212528611614118670

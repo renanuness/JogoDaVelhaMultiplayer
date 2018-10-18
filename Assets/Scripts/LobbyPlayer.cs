@@ -48,12 +48,14 @@ public class LobbyPlayer : MonoBehaviour
         _networkPlayer.syncVarsChanged += OnNetworkPlayerSyncvarChanged;
         UpdateButton(networkPlayer);
 
-        if (_networkPlayer.GetPlayer().GetSymbol() == Symbol.CIRCLE)
+        if (_networkPlayer.GetPlayerSymbol() == Symbol.CIRCLE)
         {
+            Debug.Log("Circle");
             SymbolImage.GetComponent<Image>().sprite = CircleSprite;
         }
         else
         {
+            Debug.Log("Cross");
             SymbolImage.GetComponent<Image>().sprite = CrossSprite;
 
         }

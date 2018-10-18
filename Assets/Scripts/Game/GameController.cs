@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Networking;
 
 public enum Symbol
 {
@@ -14,10 +15,16 @@ public interface IPlayer
     void Play();
 }
 
+[Serializable]
 public class Player : IPlayer {
 
     Symbol _symbol;
     NetworkPlayer _owner;
+
+    public Player()
+    {
+
+    }
 
     public Player(NetworkPlayer owner, Symbol symbol)
     {
@@ -25,9 +32,24 @@ public class Player : IPlayer {
         _symbol = symbol;
     }
 
+    public void SetSymbol(Symbol s)
+    {
+        _symbol = s;
+    }
+
     public Symbol GetSymbol()
     {
         return _symbol;
+    }
+
+    public NetworkPlayer GetOwner()
+    {
+        return _owner;
+    }
+
+    public void SetOwner(NetworkPlayer player)
+    {
+        _owner = player;
     }
 
     public void Play()
@@ -70,15 +92,48 @@ public static class PlayerFactory
 {
     public static Player CreatePlayer(NetworkPlayer owner)
     {
+        
         if(Players.PlayerOne == null)
         {
-            Players.PlayerOne = new Player(owner, Symbol.CIRCLE);
+            Symbol symbol = UnityEngine.Random.Range(1, 3) == (int)Symbol.CIRCLE ? Symbol.CIRCLE : Symbol.CROSS;
+            Players.PlayerOne = new Player(owner, symbol);
+            Debug.Log("Player one created");
             return Players.PlayerOne;
         }
         else
         {
-            Players.PlayerTwo = new Player(owner, Symbol.CROSS);
+            Symbol symbol = Players.PlayerOne.GetSymbol() == Symbol.CIRCLE ? Symbol.CROSS : Symbol.CIRCLE;
+            Players.PlayerTwo = new Player(owner, symbol);
+            Debug.Log("Player two created");
             return Players.PlayerTwo;
         }
+    }
+}
+
+public class GameController : NetworkBehaviour
+{
+    private static GameController _instance;
+
+    public static GameController Instance
+    {
+        get
+        {
+            if( _instance == null)
+            {
+                _instance = FindObjectOfType<GameController>();
+            }
+            return _instance;
+        }
+    }
+
+    Player _currentPlayer;
+    private void Start()
+    {
+        _currentPlayer = Players.PlayerOne;
+    }
+    //Command
+    private void Update()
+    {
+        _currentPlayer.Play();
     }
 }

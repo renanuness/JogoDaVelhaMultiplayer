@@ -69,8 +69,28 @@ public class NetworkPlayer : NetworkBehaviour
 
     private void CreateLobbyObject()
     {
+
         lobbyObject = Instantiate(_lobbyPrefab).GetComponent<LobbyPlayer>();
         lobbyObject.PlayerName = _playerName;
+    }
+
+    public Symbol GetPlayerSymbol()
+    {
+        return (Symbol)RpcGetSymbol();
+    }
+
+    [ClientRpc]
+    public int RpcGetSymbol()
+    {
+
+        if (Players.PlayerOne.GetOwner().netId == this.netId)
+        {
+            return (int)Players.PlayerOne.GetSymbol();
+        }
+        else
+        {
+            return (int)Players.PlayerTwo.GetSymbol();
+        }
     }
 
     [Client]
@@ -94,6 +114,7 @@ public class NetworkPlayer : NetworkBehaviour
         }
 
         _networkManager.RegisterNetworkPlayer(this);
+        
     }
 
     public override void OnStartLocalPlayer()
@@ -110,6 +131,7 @@ public class NetworkPlayer : NetworkBehaviour
     }
 
     #endregion
+    
 
     private void OnReadyChanged(bool value)
     {
@@ -136,21 +158,16 @@ public class NetworkPlayer : NetworkBehaviour
 
     #region RPC
 
-
     #endregion
 
     //
-    Player _player;
-    public void SetPLayer(Player player)
-    {
-        _player = player;
-    }
 
-    public Player GetPlayer()
-    {
-        return _player;
-    }
+
     //TODO: no momento em que entrar na cena de menu antes da partida
     // será instanciado um player OBJ pra cada playerNetwork, com síbolo aleatório, o player um sempre irá começar a partida
     //
+
+    #region Server Methods
+
+    #endregion
 }
