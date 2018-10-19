@@ -17,6 +17,7 @@ public class MyNetworkManager : NetworkManager
 
     public event Action playerJoined;
 
+    private GameController _gameController;
 
     public static MyNetworkManager Instance
     {
@@ -42,6 +43,7 @@ public class MyNetworkManager : NetworkManager
     private void Start()
     {
         _mainMenuManager = MainMenuManager.Instance;
+        _gameController = GameController.Instance;
     }
 
     public void StartMatchMakerGame(string matchName, Action<bool, MatchInfo> onCreate)
@@ -149,6 +151,7 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Player adicionado à lista");
 
         player.OnEnterLobbyScene();
+        _gameController.AttributePlayer2Player(player);
         if (playerJoined != null)
         {
             playerJoined();

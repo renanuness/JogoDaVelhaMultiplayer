@@ -15,6 +15,7 @@ public class NetworkPlayer : NetworkBehaviour
     private bool _isReady = false;
     private string _playerName;
     private MainMenuManager _mainMenuManager;
+    private Player _player;
 
     public event Action onPlayerReady;
     public event Action<NetworkPlayer> syncVarsChanged;
@@ -76,22 +77,10 @@ public class NetworkPlayer : NetworkBehaviour
 
     public Symbol GetPlayerSymbol()
     {
-        return (Symbol)RpcGetSymbol();
+        return _player.GetSymbol() ;
     }
 
-    [ClientRpc]
-    public int RpcGetSymbol()
-    {
 
-        if (Players.PlayerOne.GetOwner().netId == this.netId)
-        {
-            return (int)Players.PlayerOne.GetSymbol();
-        }
-        else
-        {
-            return (int)Players.PlayerTwo.GetSymbol();
-        }
-    }
 
     [Client]
     public void OnEnterLobbyScene()
@@ -167,7 +156,10 @@ public class NetworkPlayer : NetworkBehaviour
     // será instanciado um player OBJ pra cada playerNetwork, com síbolo aleatório, o player um sempre irá começar a partida
     //
 
-    #region Server Methods
-
+    #region 
+    public void SetPlayer(Player p)
+    {
+        _player = p;
+    }
     #endregion
 }
