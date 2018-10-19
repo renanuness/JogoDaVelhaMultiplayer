@@ -10,7 +10,12 @@ public enum Symbol
     CIRCLE
 }
 
-
+public enum GameState
+{
+    MENU,
+    GAME,
+    GAME_OVER
+}
 
 public static class Players
 {
@@ -27,28 +32,48 @@ public class GameController : NetworkBehaviour
     {
         get
         {
-            if( _instance == null)
-            {
-                _instance = FindObjectOfType<GameController>();
-            }
             return _instance;
         }
     }
 
-    public GameObject PlayerPrefab;
+    public Player PlayerPrefab;
 
+    private GameState _gameState;
     private List<Player> _players = new List<Player>();
     private Symbol _currentPlayer;
+
+    private void Awake()
+    {
+        if (_instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
 
     private void Start()
     {
         CreatePlayers();
-        _currentPlayer = _players[0].GetSymbol();
+        _gameState = GameState.MENU;
+        if (isServer)
+        {
+            ServerInitPlayers();
+        }
+        if (isClient)
+        {
+            ClientSyncPlayers();
+        }
     }
 
     private void Update()
     {
-        GetPlayerBySymbol(_currentPlayer).Play();
+        if(_gameState == GameState.GAME)
+        {
+            GetPlayerBySymbol(_currentPlayer).Play();
+        }
     }
 
     public void AddPlayer(Player p)
@@ -87,42 +112,78 @@ public class GameController : NetworkBehaviour
 
     private void DeletePlayer(Player p)
     {
-        //Criar callback pra quando o player se desconectar, deletar o player dele dessa lista
-        if (_players.Contains(p))
+        if (isServer)
         {
-            Predicate<Player> playerFinder = (Player pl) => { return pl.netId == p.netId; };  
-            _players.Find(playerFinder).SetOwner(null);
+            //Criar callback pra quando o player se desconectar, deletar o player dele dessa lista
+            if (_players.Contains(p))
+            {
+                Predicate<Player> playerFinder = (Player pl) => { return pl.netId == p.netId; };
+                _players.Find(playerFinder).SetOwner(null);
+            }
         }
     }
 
+
     public void CreatePlayers()
+    {
+        if (_players.Count == 0)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Player go = Instantiate(PlayerPrefab);
+                _players.Add(go);
+            }
+        }
+        _currentPlayer = _players[0].GetSymbol();
+    }
+
+    public void ServerInitPlayers()
     {
         Symbol symbol = UnityEngine.Random.Range(1, 3) == (int)Symbol.CIRCLE ? Symbol.CIRCLE : Symbol.CROSS;
         if (_players.Count == 0)
         {
-            for(int i = 0; i < 2; i++)
+            foreach(var player in _players)
             {
-                var go = Instantiate(PlayerPrefab);
-                go.GetComponent<Player>().Init(symbol);
+                player.GetComponent<Player>().Init(symbol);
                 symbol = symbol == Symbol.CIRCLE ? Symbol.CROSS : Symbol.CIRCLE;
             }
         }
+        _currentPlayer = _players[0].GetSymbol();
+
     }
-    
-    public bool AttributePlayer2Player(NetworkPlayer player)
+
+    public void ClientSyncPlayers()
+    {
+        int i = 0;
+        foreach(var player in _players)
+        {
+            RpcClientInitPlayers(i, (int)player.GetSymbol());
+            i++;
+        }
+    }
+
+    [Command]
+    public void CmdSyncPlayers()
+    {
+        ClientSyncPlayers();
+    }
+    [ClientRpc]
+    public void RpcClientInitPlayers(int index, int symbol)
+    {
+        _players[index].SetSymbol((Symbol)symbol);
+    }
+
+    public void AttributePlayer2Player(NetworkPlayer player)
     {
         if(_players[0].GetOwner() == null)
         {
             _players[0].SetOwner(player);
             player.SetPlayer(_players[0]);
-            return true;
         }
         else if(_players[1].GetOwner() == null)
         {
             _players[1].SetOwner(player);
             player.SetPlayer(_players[1]);
-            return true;
         }
-        return false;
     }
 }

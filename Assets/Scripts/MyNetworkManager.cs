@@ -108,8 +108,6 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Conectou alguém");
         //talvez eu crie o código aqui pq precio chamr no server o momento que um cliente se conecta e passar pra ele os players 
         //q  estão conectados pra ele poder instaciar os players obj no lobby dele
-
-
     }
 
     public override void OnStartHost()
@@ -131,7 +129,6 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("OnServerAddPlayer");
         NetworkPlayer newPlayer = Instantiate(_networkPlayerPrefab);
         DontDestroyOnLoad(newPlayer);
-        PlayerFactory.CreatePlayer(newPlayer);
         NetworkServer.AddPlayerForConnection(conn, newPlayer.gameObject, playerControllerId);
     }
 
@@ -151,14 +148,15 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Player adicionado à lista");
 
         player.OnEnterLobbyScene();
-        _gameController.AttributePlayer2Player(player);
+        player.onAuthorityStart += _gameController.AttributePlayer2Player;
+       
         if (playerJoined != null)
         {
             playerJoined();
         }
-        
     }
     
+
     private void IsPlayersReady()
     {
         if(connectedPlayers.Count >= _minimumPlayers)

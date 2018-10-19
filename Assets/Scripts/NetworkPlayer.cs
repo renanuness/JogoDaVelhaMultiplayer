@@ -10,6 +10,7 @@ public class NetworkPlayer : NetworkBehaviour
     [SerializeField]
     protected GameObject _lobbyPrefab;
     private MyNetworkManager _networkManager;
+    private GameController _gameController;
 
     [SyncVar(hook = "OnReadyChanged")]
     private bool _isReady = false;
@@ -19,6 +20,7 @@ public class NetworkPlayer : NetworkBehaviour
 
     public event Action onPlayerReady;
     public event Action<NetworkPlayer> syncVarsChanged;
+    public event Action<NetworkPlayer> onAuthorityStart;
 
     public string Name
     {
@@ -53,6 +55,8 @@ public class NetworkPlayer : NetworkBehaviour
     {
         _networkManager = MyNetworkManager.Instance;
         _mainMenuManager = MainMenuManager.Instance;
+        _gameController = GameController.Instance;
+
         _playerName = _mainMenuManager.PlayerNametInput.text;
         //_networkManager.playerJoined += InstantiatePlayerList;
     }
@@ -80,16 +84,6 @@ public class NetworkPlayer : NetworkBehaviour
         return _player.GetSymbol() ;
     }
 
-
-
-    [Client]
-    public void OnEnterLobbyScene()
-    {
-        Debug.Log("Client entered on the lobby");
-         CreateLobbyObject();
-    }
-    #region Overrides
-    //Quando começar o modo cliente, instanciar um objeto para o jogador.
     [Client]
     public override void OnStartClient()
     {
@@ -103,8 +97,18 @@ public class NetworkPlayer : NetworkBehaviour
         }
 
         _networkManager.RegisterNetworkPlayer(this);
-        
     }
+
+
+
+    [Client]
+    public void OnEnterLobbyScene()
+    {
+        Debug.Log("Client entered on the lobby");
+         CreateLobbyObject();
+    }
+    #region Overrides
+    //Quando começar o modo cliente, instanciar um objeto para o jogador.
 
     public override void OnStartLocalPlayer()
     {
@@ -116,6 +120,7 @@ public class NetworkPlayer : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
+        onAuthorityStart(this);
         lobbyObject.Init(this);
     }
 
