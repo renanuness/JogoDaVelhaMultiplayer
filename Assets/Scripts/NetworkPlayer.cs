@@ -121,6 +121,7 @@ public class NetworkPlayer : NetworkBehaviour
     {
         base.OnStartAuthority();
         onAuthorityStart(this);
+        _gameController.CmdUpdatePlayers();
         lobbyObject.Init(this);
     }
 

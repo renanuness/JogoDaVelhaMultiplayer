@@ -62,10 +62,7 @@ public class GameController : NetworkBehaviour
         {
             ServerInitPlayers();
         }
-        if (isClient)
-        {
-            ClientSyncPlayers();
-        }
+
     }
 
     private void Update()
@@ -140,7 +137,7 @@ public class GameController : NetworkBehaviour
     public void ServerInitPlayers()
     {
         Symbol symbol = UnityEngine.Random.Range(1, 3) == (int)Symbol.CIRCLE ? Symbol.CIRCLE : Symbol.CROSS;
-        if (_players.Count == 0)
+        if (_players.Count != 0)
         {
             foreach(var player in _players)
             {
@@ -154,26 +151,36 @@ public class GameController : NetworkBehaviour
 
     public void ClientSyncPlayers()
     {
-        int i = 0;
-        foreach(var player in _players)
-        {
-            RpcClientInitPlayers(i, (int)player.GetSymbol());
-            i++;
-        }
+         CmdSyncPlayers();
     }
 
     [Command]
     public void CmdSyncPlayers()
     {
-        ClientSyncPlayers();
+        //int[] symbols = new int[2];
+        //symbols[0] = (int)_players[0].GetSymbol();
+        //symbols[0] = (int)_players[1].GetSymbol();
+    }
+    [Command]
+    public void CmdUpdatePlayers()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            RpcClientSetPlayers(i, (int)_players[i].GetSymbol());
+        }
     }
     [ClientRpc]
-    public void RpcClientInitPlayers(int index, int symbol)
+    public void RpcClientSetPlayers(int index, int symbol)
     {
         _players[index].SetSymbol((Symbol)symbol);
     }
-
     public void AttributePlayer2Player(NetworkPlayer player)
+    {
+        RpcAttributePlayer2Player(player);
+    }
+
+    [ClientRpc]
+    public void RpcAttributePlayer2Player(NetworkPlayer player)
     {
         if(_players[0].GetOwner() == null)
         {

@@ -8,6 +8,7 @@ public class CreateMatchUI : MonoBehaviour
     public InputField MatchName;
     private MyNetworkManager _networkManager;
     private MainMenuManager _mainMenu;
+
     private void Start()
     {
         _networkManager = MyNetworkManager.Instance;
